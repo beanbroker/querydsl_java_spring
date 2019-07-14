@@ -1,0 +1,25 @@
+##
+spring:
+  application:
+    name: Beanbroker Test Server
+  http:
+    log-request-details: true
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/study
+    username: root
+    password: password
+
+
+
+
+## 서버 정보
+server:
+  port: 9090
+#  tomcat:
+#    basedir: ./logs
+
+
+#logging:
+#  level:
+#    root: debug
