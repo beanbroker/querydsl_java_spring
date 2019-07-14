@@ -362,4 +362,202 @@ public class UserController {
 
 
 
---------------------
+------------------------------
+
+
+
+
+
+# PREDICATOR
+
+
+
+[git source](https://github.com/beanbroker/querydsl_java_spring) 링크
+
+[kotlin_version](https://beanbroker.github.io/2019/03/09/Kotlin/kotlin_queryDsl3/) 링크
+
+
+PREDICATOR가 왜필요할지는  동적쿼리를 매번매번 function으로 추가하여 쓸데없는 메소드 추가를 방지
+
+
+## 바로 소스 카즈아
+
+__중요부분__ 매우 중요
+
+괜히 이펙티브자바에서 빌더를 써라라고 하는것이 아님!
+
+> UserPredicator.java
+
+```java
+package com.beanbroker.sample.api.user.service;
+
+import com.beanbroker.sample.api.user.entity.QUserEntity;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
+import org.springframework.util.StringUtils;
+
+public class UserPredicator {
+
+    private static final QUserEntity table = QUserEntity.userEntity;
+
+    private BooleanBuilder builder = new BooleanBuilder();
+
+
+    public UserPredicator userId(String userId){
+
+        if(userId != null){
+            builder.and(table.userId.eq(userId));
+        }
+        return this;
+    }
+
+    public UserPredicator name(String name){
+
+        if(name != null){
+            builder.and(table.name.eq(name));
+        }
+        return this;
+    }
+
+    public UserPredicator age(int age){
+
+        if(age > 0){
+            builder.and(table.age.eq(age));
+        }
+        return this;
+    }
+
+    public Predicate values(){
+
+        return builder.getValue();
+    }
+}
+
+
+```
+
+참쉬죠잉?
+
+
+> UserRepositoryCustom.java
+
+```java
+import com.beanbroker.sample.api.user.entity.UserEntity;
+import com.querydsl.core.types.Predicate;
+public interface UserRepositoryCustom {
+
+
+    UserEntity getByUserId(String userId);
+    UserEntity getUserInfoWithPredicator(Predicate predicate);
+}
+
+
+
+```
+
+
+> UserRepositoryImpl.java
+
+```sql
+
+public class UserRepositoryImpl extends QuerydslRepositorySupport
+        implements UserRepositoryCustom {
+
+    private static final QUserEntity table = QUserEntity.userEntity;
+
+
+    /**
+     * Creates a new {@link QuerydslRepositorySupport} instance for the given domain type.
+     *
+     * @param domainClass must not be {@literal null}.
+     */
+    public UserRepositoryImpl() {
+        super(UserEntity.class);
+    }
+
+    @Override
+    public UserEntity getByUserId(String userId) {
+
+        return  from(table)
+                .where(table.userId.eq(userId))
+                .fetchOne();
+
+    }
+
+    @Override
+    public UserEntity getUserInfoWithPredicator(Predicate userPredicator) {
+        return from(table)
+                .where(userPredicator)
+                .fetchOne();
+    }
+}
+
+```
+
+## 셋팅은 끝낫는데 how to use?
+
+아래가 핵심코드
+
+```java
+ public UserEntity getUserInfoWithPredicator(
+            String userId,
+            String name,
+            int age
+
+    ){
+
+
+
+        return userRepository.getUserInfoWithPredicator(
+                setUserQuery(userId, name, age)
+        );
+    }
+
+
+    private Predicate setUserQuery( String userId,
+                                    String name,
+                                    int age){
+
+        return new UserPredicator()
+                .userId(userId)
+                .name(name)
+                .age(age)
+                .values();
+
+    }
+```
+
+## 그럼 써보자
+
+```java
+   UserEntity test1 = userService.getUserInfoWithPredicator(
+                "beanbroker",
+                null,
+                0
+
+        );
+
+        System.out.println(test1.toString());
+
+
+        UserEntity test2 = userService.getUserInfoWithPredicator(
+                "beanbroker",
+                    "pkj",
+                0
+
+        );
+
+
+        System.out.println(test2.toString());
+
+        UserEntity test3 = userService.getUserInfoWithPredicator(
+                null,
+                null,
+                32
+
+        );
+
+        System.out.println(test3.toString());
+```
+
+아 요즘은 왜 저렇게써야하는지 설명 적는게 귀찮다.... 활용방법은 다양하니! 잘사용합시당
