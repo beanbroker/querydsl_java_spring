@@ -2,6 +2,8 @@ package com.beanbroker.sample.api.user.repository;
 
 import com.beanbroker.sample.api.user.entity.QUserEntity;
 import com.beanbroker.sample.api.user.entity.UserEntity;
+import com.beanbroker.sample.api.user.service.UserPredicator;
+import com.querydsl.core.types.Predicate;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 public class UserRepositoryImpl extends QuerydslRepositorySupport
@@ -26,5 +28,12 @@ public class UserRepositoryImpl extends QuerydslRepositorySupport
                 .where(table.userId.eq(userId))
                 .fetchOne();
 
+    }
+
+    @Override
+    public UserEntity getUserInfoWithPredicator(Predicate userPredicator) {
+        return from(table)
+                .where(userPredicator)
+                .fetchOne();
     }
 }

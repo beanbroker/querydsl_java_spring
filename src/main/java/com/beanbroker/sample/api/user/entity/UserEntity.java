@@ -2,6 +2,7 @@ package com.beanbroker.sample.api.user.entity;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 
 
 import javax.persistence.Entity;
@@ -11,7 +12,11 @@ import javax.persistence.Id;
 
 @Entity(name = "users")
 @Data
+@ToString
 public class UserEntity {
+
+    public UserEntity() {
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,4 +66,6 @@ public class UserEntity {
     public void setAge(int age) {
         this.age = age;
     }
+
+
 }

@@ -26,4 +26,42 @@ public class UserController {
 
         return userService.getUserId("beanbroker");
     }
+
+
+    @GetMapping("/user/test")
+    public UserEntity testPredicate() throws NotFoundException {
+
+
+        UserEntity test1 = userService.getUserInfoWithPredicator(
+                "beanbroker",
+                null,
+                0
+
+        );
+
+        System.out.println(test1.toString());
+
+
+        UserEntity test2 = userService.getUserInfoWithPredicator(
+                "beanbroker",
+                    "pkj",
+                0
+
+        );
+
+
+        System.out.println(test2.toString());
+
+        UserEntity test3 = userService.getUserInfoWithPredicator(
+                null,
+                null,
+                32
+
+        );
+
+        System.out.println(test3.toString());
+
+
+        return test3;
+    }
 }
