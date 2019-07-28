@@ -22,7 +22,6 @@ public class UserController {
 
 
 
-        userService.createUser();
 
         return userService.getUserId("beanbroker");
     }

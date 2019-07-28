@@ -6,6 +6,7 @@ import com.beanbroker.sample.api.user.repository.UserRepository;
 import com.querydsl.core.types.Predicate;
 import javassist.NotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -19,21 +20,23 @@ public class UserService {
     }
 
 
-    public void createUser(){
-
+    @Transactional(readOnly = false)
+    public void createUser(String userId, String userName, int age) {
 
         userRepository.save(
-                new UserEntity("beanbroker", "pkj", 32)
+                UserEntity.builder().userId(userId).name(userName).age(age).build()
         );
 
     }
 
+    @Transactional(readOnly = true)
     public UserEntity getUserId(String userId) throws NotFoundException {
 
 
+        userRepository.getByUserId(userId);
         Optional<UserEntity> userEntity = Optional.ofNullable(userRepository.getByUserId(userId));
 
-        if(!userEntity.isPresent()){
+        if (!userEntity.isPresent()) {
             throw new NotFoundException("Not Found");
         }
 
@@ -46,13 +49,21 @@ public class UserService {
     }
 
 
+    @Transactional(readOnly = false)
+    public void deleteUser(String userId) {
+
+
+        userRepository.delete(
+                userRepository.getByUserId(userId));
+    }
+
+
     public UserEntity getUserInfoWithPredicator(
             String userId,
             String name,
             int age
 
-    ){
-
+    ) {
 
 
         return userRepository.getUserInfoWithPredicator(
@@ -61,9 +72,9 @@ public class UserService {
     }
 
 
-    private Predicate setUserQuery( String userId,
-                                    String name,
-                                    int age){
+    private Predicate setUserQuery(String userId,
+                                   String name,
+                                   int age) {
 
         return new UserPredicator()
                 .userId(userId)
