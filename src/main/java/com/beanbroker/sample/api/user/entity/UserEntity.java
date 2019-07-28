@@ -8,6 +8,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(name = "users")
 @Getter
+@Setter
 public class UserEntity {
 
 

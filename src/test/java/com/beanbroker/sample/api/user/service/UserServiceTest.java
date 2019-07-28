@@ -44,7 +44,7 @@ public class UserServiceTest {
         userService.createUser(TEST_USER_ID, TEST_USER_NAME, TEST_USER_AGE);
 
         //When 유져를 찾을때
-        UserEntity userEntity = userService.getUserId(TEST_USER_ID);
+        UserEntity userEntity = userService.getByUserId(TEST_USER_ID);
 
         //then 유저의 이름은 룰루랄라이다
         assertThat(userEntity.getName(), is(TEST_USER_NAME));
@@ -57,7 +57,7 @@ public class UserServiceTest {
 
 
         //When 유져를 찾을때
-        UserEntity userEntity = userService.getUserId("sadfsd");
+        UserEntity userEntity = userService.getByUserId("sadfsd");
 
 
     }

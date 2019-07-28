@@ -1,13 +1,15 @@
 package com.beanbroker.sample.api.user;
 
 
+import com.beanbroker.sample.api.user.domain.UserInfo;
 import com.beanbroker.sample.api.user.entity.UserEntity;
 import com.beanbroker.sample.api.user.service.UserService;
 import javassist.NotFoundException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
@@ -17,17 +19,46 @@ public class UserController {
     }
 
 
-    @GetMapping("/user")
-    public UserEntity testUser() throws NotFoundException {
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createUser(
+            @RequestBody UserInfo userInfo
+    ) {
 
 
-
-
-        return userService.getUserId("beanbroker");
+        userService.createUser(
+                userInfo.getUserId(),
+                userInfo.getUserName(),
+                userInfo.getUserAge()
+        );
     }
 
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public UserEntity getUser(
+            @RequestParam("userId") String userId
+    ) throws NotFoundException {
+        return userService.getByUserId(userId);
+    }
 
-    @GetMapping("/user/test")
+    @PutMapping
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void updateUser(
+            @RequestBody UserInfo userInfo
+    ) {
+
+        userService.updateUser(userInfo);
+    }
+
+    @DeleteMapping("/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(
+            @PathVariable("userId") String userId
+    ) {
+        userService.deleteUser(userId);
+    }
+
+    @GetMapping("/test")
     public UserEntity testPredicate() throws NotFoundException {
 
 
@@ -43,7 +74,7 @@ public class UserController {
 
         UserEntity test2 = userService.getUserInfoWithPredicator(
                 "beanbroker",
-                    "pkj",
+                "pkj",
                 0
 
         );

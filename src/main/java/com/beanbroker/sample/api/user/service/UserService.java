@@ -30,7 +30,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserEntity getUserId(String userId) throws NotFoundException {
+    public UserEntity getByUserId(String userId) throws NotFoundException {
 
 
         userRepository.getByUserId(userId);
@@ -56,6 +56,17 @@ public class UserService {
         userRepository.delete(
                 userRepository.getByUserId(userId));
     }
+
+    @Transactional(readOnly = false)
+    public void updateUser(UserInfo userInfo){
+
+        UserEntity user = userRepository.getByUserId(userInfo.getUserId());
+
+
+        user.setAge(userInfo.getUserAge());
+
+    }
+
 
 
     public UserEntity getUserInfoWithPredicator(
