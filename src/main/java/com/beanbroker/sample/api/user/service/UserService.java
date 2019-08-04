@@ -3,8 +3,9 @@ package com.beanbroker.sample.api.user.service;
 import com.beanbroker.sample.api.user.domain.UserInfo;
 import com.beanbroker.sample.api.user.entity.UserEntity;
 import com.beanbroker.sample.api.user.repository.UserRepository;
+import com.beanbroker.sample.exception.BeanbrokerError;
+import com.beanbroker.sample.exception.NotFoundException;
 import com.querydsl.core.types.Predicate;
-import javassist.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,14 +31,14 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserEntity getByUserId(String userId) throws NotFoundException {
+    public UserEntity getByUserId(String userId) {
 
 
         userRepository.getByUserId(userId);
         Optional<UserEntity> userEntity = Optional.ofNullable(userRepository.getByUserId(userId));
 
         if (!userEntity.isPresent()) {
-            throw new NotFoundException("Not Found");
+            throw new NotFoundException(BeanbrokerError.NOT_FOUND_USER , "user not found");
         }
 
         UserInfo userInfo = new UserInfo();
@@ -94,4 +95,5 @@ public class UserService {
                 .values();
 
     }
+
 }
