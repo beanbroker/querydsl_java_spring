@@ -1,4 +1,4 @@
-package com.beanbroker.sample.config;
+package com.beanbroker.sample.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
